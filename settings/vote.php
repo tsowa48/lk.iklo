@@ -19,21 +19,46 @@ if (!isset($_SESSION['currentUser']) || !in_array(8, $_SESSION['currentUser']->p
       exit(200);
     }
 
+    $u0 = $_POST['u0'];
+    $t0 = $_POST['t0'];
+    $u1 = $_POST['u1'];
+    $t1 = $_POST['t1'];
+    $u2 = $_POST['u2'];
+    $t2 = $_POST['t2'];
+    $u3 = $_POST['u3'];
+    $t3 = $_POST['t3'];
+
     $duf = '(select extract(doy from date \''.$_POST['duf']. '\'))';
     $dul = '(select extract(doy from date \''.$_POST['dul']. '\'))';
+    $dtf = '(select extract(doy from date \''.$_POST['dtf']. '\'))';
+    $dtl = '(select extract(doy from date \''.$_POST['dtl']. '\'))';
     $kik = explode(PHP_EOL, iconv('windows-1251', 'utf-8', file_get_contents($_FILES['kik']['tmp_name'])));
     $_size = count($kik);
     $name = str_replace('"', '', explode(';', $kik[0])[0]);
     $day = explode(';', $kik[1])[0];
-    $vid = pg_fetch_row(pg_query($_SESSION['psql'], 'insert into vote(name, day) values (\''.$name.'\', 4) returning id;'))[0];
+
+    $vid = pg_fetch_row(pg_query($_SESSION['psql'], 'insert into vote(name, day) values (\''.$name.'\', '.(date('z', strtotime($day)) + 1).') returning id;'))[0];
     $q = array();
-    for($i = 0; $i < $_size; ++$i) {
+    $_sql = '';
+    for($i = 12; $i < $_size; ++$i) {
       $k = explode(';', $kik[$i]);
-      if(mb_strlen($k[6]) > 0) {
+      if(mb_strlen($k[6]) > 0) { //uik
         $q[] = '((select id from komission where number='.$k[6].'), '.$vid.', '.$duf.', '.$dul.')';
+        $_sql .= 'insert into bet(vid,kid,pid,price) values ('.$vid.',(select id from komission where number='.$k[6].'), (select id from post where name=\'Председатель\' and type=0), '.$u0.');';
+        $_sql .= 'insert into bet(vid,kid,pid,price) values ('.$vid.',(select id from komission where number='.$k[6].'), (select id from post where name=\'Заместитель председателя\' and type=0), '.$u1.');';
+        $_sql .= 'insert into bet(vid,kid,pid,price) values ('.$vid.',(select id from komission where number='.$k[6].'), (select id from post where name=\'Секретарь\' and type=0), '.$u2.');';
+        $_sql .= 'insert into bet(vid,kid,pid,price) values ('.$vid.',(select id from komission where number='.$k[6].'), (select id from post where name=\'Член комиссии\' and type=0), '.$u3.');';
+      } else if(strpos($k[9],'T') !== false) { //tik
+        $tik = explode('T', $k[9])[1];
+        $q[] = '((select id from komission where number='.$tik.'), '.$vid.', '.$duf.', '.$dul.')';
+        $_sql .= 'insert into bet(vid,kid,pid,price) values ('.$vid.',(select id from komission where number='.$tik.'), (select id from post where name=\'Председатель\' and type=0), '.$t0.');';
+        $_sql .= 'insert into bet(vid,kid,pid,price) values ('.$vid.',(select id from komission where number='.$tik.'), (select id from post where name=\'Заместитель председателя\' and type=0), '.$t1.');';
+        $_sql .= 'insert into bet(vid,kid,pid,price) values ('.$vid.',(select id from komission where number='.$tik.'), (select id from post where name=\'Секретарь\' and type=0), '.$t2.');';
+        $_sql .= 'insert into bet(vid,kid,pid,price) values ('.$vid.',(select id from komission where number='.$tik.'), (select id from post where name=\'Член комиссии\' and type=0), '.$t3.');';
       }
     }
     pg_query($_SESSION['psql'], 'insert into kv(kid, vid, first, last) values '.implode(',', $q).';');
+    pg_query($_SESSION['psql'], $_sql);
   }
 
   $votes = pg_query($_SESSION['psql'], 'select V.id, V.name, (select date \''.date('Y').'-01-01\' + V.day - 1) from vote V, kv KV, komission K where K.id=KV.kid and V.id=KV.vid and K.id='.$_SESSION['currentKid'].';');
@@ -89,7 +114,7 @@ if (!isset($_SESSION['currentUser']) || !in_array(8, $_SESSION['currentUser']->p
 <div class='tab-content'>
   <div class='tab-pane active container'>
     <nav>
-      <!--a class='btn btn-success btn-small' data-toggle='modal' data-target='#addVoteModal'>Добавить выборы</a-->
+      <a class='btn btn-success btn-small' data-toggle='modal' data-target='#addVoteModal'>Добавить выборы</a>
     </nav>
     <main>
       <table class='table table-bordered table-condensed table-striped'>
@@ -135,7 +160,7 @@ if (!isset($_SESSION['currentUser']) || !in_array(8, $_SESSION['currentUser']->p
           <br>
 
           <table class='table table-bordered table-condensed'>
-            <tr><th colspan='3' style='text-align:center;background:#eee'>Ставка (руб/час):</th></tr>
+            <tr><th></th><th colspan='3' style='text-align:center;background:#eee'>Ставка (руб/час):</th></tr>
             <tr>
               <th>Должность</th>
               <th>УИК</th>
@@ -180,8 +205,8 @@ if (!isset($_SESSION['currentUser']) || !in_array(8, $_SESSION['currentUser']->p
           </div>
           <div class='input-group'>
             <span class='input-group-addon'>Начало работы ИКСРФ:<br><br>Конец работы ИКСРФ:</span>
-            <input type='date' class='form-control' name='dif' required/>
-            <input type='date' class='form-control' name='dil' required/>
+            <input type='date' class='form-control' name='dif'/>
+            <input type='date' class='form-control' name='dil'/>
           </div>
 
         </div>
