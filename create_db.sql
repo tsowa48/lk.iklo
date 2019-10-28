@@ -16,7 +16,7 @@ create table answer(id bigserial primary key not null, qid bigint not null, text
 create table result(uid bigint not null, tid bigint not null, ball decimal not null);
 create table incorrect(tid bigint not null, qid bigint not null, uid bigint not null);
 
-create table calendar(doy int not null primary key, day text not null, isholy int not null);
+create table calendar(doy int not null primary key, day text not null, isholy int not null, year int not null);
 
 insert into post(name,type) values('Председатель',0);
 insert into post(name,type) values('Заместитель председателя',0);
