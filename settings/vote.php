@@ -37,7 +37,7 @@ if (!isset($_SESSION['currentUser']) || !in_array(8, $_SESSION['currentUser']->p
     $name = str_replace('"', '', explode(';', $kik[0])[0]);
     $day = explode(';', $kik[1])[0];
 
-    $vid = pg_fetch_row(pg_query($_SESSION['psql'], 'insert into vote(name, day) values (\''.$name.'\', '.(date('z', strtotime($day)) + 1).') returning id;'))[0];
+    $vid = pg_fetch_row(pg_query($_SESSION['psql'], 'insert into vote(name, day, year) values (\''.$name.'\', '.(date('z', strtotime($day)) + 1).', '.date('Y', strtotime($day)).') returning id;'))[0];
     $q = array();
     $_sql = '';
     for($i = 12; $i < $_size; ++$i) {
@@ -61,7 +61,7 @@ if (!isset($_SESSION['currentUser']) || !in_array(8, $_SESSION['currentUser']->p
     pg_query($_SESSION['psql'], $_sql);
   }
 
-  $votes = pg_query($_SESSION['psql'], 'select V.id, V.name, (select date \''.date('Y').'-01-01\' + V.day - 1) from vote V, kv KV, komission K where K.id=KV.kid and V.id=KV.vid and K.id='.$_SESSION['currentKid'].';');
+  $votes = pg_query($_SESSION['psql'], 'select V.id, V.name, (select date \''.date('Y').'-01-01\' + V.day - 1) from vote V, kv KV, komission K where K.id=KV.kid and V.id=KV.vid and V.year='.date('Y').' and K.id='.$_SESSION['currentKid'].';');
 ?>
 
 <body class='container-fluid'>
