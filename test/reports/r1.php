@@ -9,7 +9,7 @@
     $rid = intval($_GET['id']);
     $tid = intval($_GET['tid']);
     $kid = (isset($_GET['kid']) && is_numeric($_GET['kid'])) ? intval($_GET['kid']) : $_SESSION['currentUser']->kid;
-    $t = pg_fetch_row(pg_query($_SESSION['psql'], 'select T.text, V.name from test T, vote V where V.id=T.vid and T.id='.$tid.';'));
+    $t = pg_fetch_row(pg_query($_SESSION['psql'], 'select T.text, V.name from test T, vote V where V.year='.date('Y').' and V.id=T.vid and T.id='.$tid.';'));
     echo $t[0].'<br>('.$t[1].')</div>';
     echo '<table class=\'table table-bordered table-striped table-condensed\'>';
     echo '<tr><th>Комиссия</th><th>Кол-во нижестоящих комиссий</th><th>Кол-во членов комиссии</th><th>Кол-во принявших участие</th><th>Кол-во сдавших</th></tr>';
@@ -38,7 +38,7 @@
     echo '<tr><th>Итого:</th><th>'.$allparent.'</th><th>'.$allMembers.'</th><th>'.$allTookPart.'</th><th>'.$allFinish.'</th></tr>';
     echo '</table>';
   } else { // Список тем тестов
-    $tests = pg_query($_SESSION['psql'], 'select T.id, T.text, V.name from test T, vote V, klass K where T.vid=V.id and K.tid=T.id and (V.day+'.$daysAfterVote.') > '.(date('z') + 1).' group by 1,2,3 order by V.name, T.text;');
+    $tests = pg_query($_SESSION['psql'], 'select T.id, T.text, V.name from test T, vote V, klass K where V.year='.date('Y').' and T.vid=V.id and K.tid=T.id and (V.day+'.$daysAfterVote.') > '.(date('z') + 1).' group by 1,2,3 order by V.name, T.text;');
     echo '<b>Тема для отчета:</b></div>';
     echo '<div class=\'list-group\'>';
     while($t = pg_fetch_row($tests)) {
