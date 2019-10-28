@@ -115,6 +115,7 @@ if (!isset($_SESSION['currentUser']) || !in_array(8, $_SESSION['currentUser']->p
   <div class='tab-pane active container'>
     <nav>
       <a class='btn btn-success btn-small' data-toggle='modal' data-target='#addVoteModal'>Добавить выборы</a>
+      <a class='btn btn-warning btn-small' href='cal.php'>Обновить календарь</a>
     </nav>
     <main>
       <table class='table table-bordered table-condensed table-striped'>
