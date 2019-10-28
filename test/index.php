@@ -54,7 +54,7 @@ if (!isset($_SESSION['currentUser']) || $_SESSION['currentUser'] == NULL) {
   <main class='container'>
     <div class='list-group'>
     <?php
-    $tests = pg_query($_SESSION['psql'], 'select T.id, T.text, T.passball, coalesce((select R.ball from result R where R.uid='.$_SESSION['currentUser']->id.' and R.tid=T.id), -9999.0), V.name from test T, klass G, vote V where T.vid=V.id and T.id=G.tid and (G.kid='.$_SESSION['currentUser']->kid.' or G.uid='.$_SESSION['currentUser']->id.' or G.pid in ('.implode(',', $_SESSION['currentUser']->post).'));');
+    $tests = pg_query($_SESSION['psql'], 'select T.id, T.text, T.passball, coalesce((select R.ball from result R where R.uid='.$_SESSION['currentUser']->id.' and R.tid=T.id), -9999.0), V.name from test T, klass G, vote V where V.year='.date('Y').' and T.vid=V.id and T.id=G.tid and (G.kid='.$_SESSION['currentUser']->kid.' or G.uid='.$_SESSION['currentUser']->id.' or G.pid in ('.implode(',', $_SESSION['currentUser']->post).'));');
     if(pg_num_rows($tests)>0){
       while($test = pg_fetch_row($tests)) {
         if($test[3] < $test[2]) {
