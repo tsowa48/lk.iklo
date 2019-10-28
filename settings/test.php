@@ -121,7 +121,7 @@ if (!isset($_SESSION['currentUser']) || !in_array(8, $_SESSION['currentUser']->p
   
     <div class='list-group'>
         <?php
-        $tests = pg_query($_SESSION['psql'], 'select T.id, T.text, T.passball, V.name from test T, vote V where V.id=T.vid order by V.day, T.text;');
+        $tests = pg_query($_SESSION['psql'], 'select T.id, T.text, T.passball, V.name from test T, vote V where V.id=T.vid and (V.day + 60)>'.date('z').' and V.year='.date('Y').' order by V.day, T.text;');
         if(pg_num_rows($tests) === 0) {
           echo '<p align=\'center\' class=\'list-group-item\'>Тестов нет</p>';
         } else {
