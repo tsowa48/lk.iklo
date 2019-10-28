@@ -2,7 +2,7 @@ create table users(id bigserial primary key not null, fio text not null, login t
 create table pu(uid bigint not null, pid bigint not null);
 create table post(id bigserial primary key not null, name text not null, type int not null);
 create table komission(id bigserial primary key not null, parent bigint, name text not null, number bigint not null, voters bigint, hkoib int, hkeg int);
-create table vote(id bigserial primary key not null, name text not null, day int not null);
+create table vote(id bigserial primary key not null, name text not null, day int not null, year int not null);
 create table kv(kid bigint not null, vid bigint not null, first int not null, last int not null);
 create table rate(vid bigint not null, uid bigint not null, coef decimal);
 create table bet(vid bigint not null, kid bigint not null, pid bigint not null, price decimal not null);
