@@ -1,4 +1,77 @@
 <?php
+function str2rtf($str) {
+  $ret = $str;
+  $ret = str_replace('А', '\'c0', $ret);
+  $ret = str_replace('Б', '\'c1', $ret);
+  $ret = str_replace('В', '\'c2', $ret);
+  $ret = str_replace('Г', '\'c3', $ret);
+  $ret = str_replace('Д', '\'c4', $ret);
+  $ret = str_replace('Е', '\'c5', $ret);
+  $ret = str_replace('Ё', '\'c5', $ret);//<---
+  $ret = str_replace('Ж', '\'c6', $ret);
+  $ret = str_replace('З', '\'c7', $ret);
+  $ret = str_replace('И', '\'c8', $ret);
+  $ret = str_replace('Й', '\'c9', $ret);
+  $ret = str_replace('К', '\'ca', $ret);
+  $ret = str_replace('Л', '\'cb', $ret);
+  $ret = str_replace('М', '\'cc', $ret);
+  $ret = str_replace('Н', '\'cd', $ret);
+  $ret = str_replace('О', '\'ce', $ret);
+  $ret = str_replace('П', '\'cf', $ret);
+  $ret = str_replace('Р', '\'d0', $ret);
+  $ret = str_replace('С', '\'d1', $ret);
+  $ret = str_replace('Т', '\'d2', $ret);
+  $ret = str_replace('У', '\'d3', $ret);
+  $ret = str_replace('Ф', '\'d4', $ret);
+  $ret = str_replace('Х', '\'d5', $ret);
+  $ret = str_replace('Ц', '\'d6', $ret);
+  $ret = str_replace('Ч', '\'d7', $ret);
+  $ret = str_replace('Ш', '\'d8', $ret);
+  $ret = str_replace('Щ', '\'d9', $ret);
+  $ret = str_replace('Ъ', '\'da', $ret);
+  $ret = str_replace('Ы', '\'db', $ret);
+  $ret = str_replace('Ь', '\'dc', $ret);
+  $ret = str_replace('Э', '\'dd', $ret);
+  $ret = str_replace('Ю', '\'de', $ret);
+  $ret = str_replace('Я', '\'df', $ret);
+  $ret = str_replace('а', '\'e0', $ret);
+  $ret = str_replace('б', '\'e1', $ret);
+  $ret = str_replace('в', '\'e2', $ret);
+  $ret = str_replace('г', '\'e3', $ret);
+  $ret = str_replace('д', '\'e4', $ret);
+  $ret = str_replace('е', '\'e5', $ret);
+  $ret = str_replace('ё', '\'e5', $ret);//<---
+  $ret = str_replace('ж', '\'e6', $ret);
+  $ret = str_replace('з', '\'e7', $ret);
+  $ret = str_replace('и', '\'e8', $ret);
+  $ret = str_replace('й', '\'e9', $ret);
+  $ret = str_replace('к', '\'ea', $ret);
+  $ret = str_replace('л', '\'eb', $ret);
+  $ret = str_replace('м', '\'ec', $ret);
+  $ret = str_replace('н', '\'ed', $ret);
+  $ret = str_replace('о', '\'ee', $ret);
+  $ret = str_replace('п', '\'ef', $ret);
+  $ret = str_replace('р', '\'f0', $ret);
+  $ret = str_replace('с', '\'f1', $ret);
+  $ret = str_replace('т', '\'f2', $ret);
+  $ret = str_replace('у', '\'f3', $ret);
+  $ret = str_replace('ф', '\'f4', $ret);
+  $ret = str_replace('х', '\'f5', $ret);
+  $ret = str_replace('ц', '\'f6', $ret);
+  $ret = str_replace('ч', '\'f7', $ret);
+  $ret = str_replace('ш', '\'f8', $ret);
+  $ret = str_replace('щ', '\'f9', $ret);
+  $ret = str_replace('ъ', '\'fa', $ret);
+  $ret = str_replace('ы', '\'fb', $ret);
+  $ret = str_replace('ь', '\'fc', $ret);
+  $ret = str_replace('э', '\'fd', $ret);
+  $ret = str_replace('ю', '\'fe', $ret);
+  $ret = str_replace('я', '\'ff', $ret);
+
+  //$ret = str_replace('', '', $ret);
+  return $ret;
+};
+
 require_once $_SERVER['DOCUMENT_ROOT']."/user.php";
 session_start();
 if (!isset($_SESSION['currentUser'])) {
@@ -24,6 +97,12 @@ if (!isset($_SESSION['currentUser'])) {
     header('Pragma: public');
     $content = file_get_contents($file);
 
+    //Replace template variables
+    $content = str_replace('lk_currentYear', date('Y'), $content);//Текущий год
+    $content = str_replace('lk_currentUserFIO', $_SESSION['currentUser']->fio, $content);//ФИО текущего пользователя
+    $content = str_replace('lk_currentIK', $_SESSION['currentUser']->ik, $content);//Комиссия текущего пользователя
+
+    $content = str2rtf($content);
     header('Content-Length: '.strlen($content));
     echo $content;
     exit();
@@ -43,7 +122,9 @@ if (!isset($_SESSION['currentUser'])) {
           <a class='dropdown-toggle' data-toggle='dropdown' href='#'>Тестирование&nbsp;<span class='caret'></span></a>
           <ul class='dropdown-menu'>
             <li><a href='/test/'>Тесты</a></li>
-            <li><a href='/test/reports.php'>Отчеты</a></li>
+            <?php if(in_array(8, $_SESSION['currentUser']->post))
+  echo '<li><a href="/test/reports.php">Отчеты</a></li>';
+?>
           </ul>
         </li>
         <li class='dropdown active'>
@@ -80,25 +161,11 @@ if (!isset($_SESSION['currentUser'])) {
       $dir = $_SERVER['DOCUMENT_ROOT'].'/docs/files/';
       $files1 = array_diff(scandir($dir), array('..', '.'));
     
-      foreach ($files1 as $key => $value) {
-        if (is_file($dir.'/'.$value))  {
-          //$mime = mime_content_type($dir.'/'.$value);
-          $z = zip_open($dir.'/'.$value);
-          while ($zip_entry = zip_read($z)) {
-            $name = zip_entry_name($zip_entry);
-            if($name === 'docProps/core.xml') {// docProps/app.xml
-              zip_entry_open($z, $zip_entry, "r");
-              $buf = (zip_entry_read($zip_entry, zip_entry_filesize($zip_entry)));//json_encode
-              $title = substr($buf, strpos($buf, '<dc:title>') + 10, strpos($buf, '</dc:title>') - strpos($buf, '<dc:title>') - 10);
-
-              //echo '<a href=\'?doc='.$value.'\' class=\'list-group-item list-group-item-action list-group-item-default\'>'.$mime.'</a>';
-              echo '<tr><td>'.$title.'</td><td><a href=\'?doc='.$value.'\' class=\'btn btn-primary btn-small\'><i class=\'glyphicon glyphicon-save\'></i> Word</a></td></tr>';
-
-              zip_entry_close($zip_entry);
-              break;
-            }
-          }
-          zip_close($z);
+      foreach ($files1 as $key => $name) {
+        if (is_file($dir.'/'.$name))  {
+          $title = mb_substr($name, 0, strlen($name) - mb_strrpos($name, '.'));
+          ////$mime = mime_content_type($dir.'/'.$name);
+          echo '<tr><td>'.$title.'</td><td class=\'col-xs-2\'><a href=\'?doc='.$name.'\' class=\'btn btn-primary btn-small\'><i class=\'glyphicon glyphicon-save\'></i> Word</a></td></tr>';
         }
       }
   ?>

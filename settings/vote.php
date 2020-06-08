@@ -48,8 +48,8 @@ if (!isset($_SESSION['currentUser']) || !in_array(8, $_SESSION['currentUser']->p
         $_sql .= 'insert into bet(vid,kid,pid,price) values ('.$vid.',(select id from komission where number='.$k[6].'), (select id from post where name=\'Заместитель председателя\' and type=0), '.$u1.');';
         $_sql .= 'insert into bet(vid,kid,pid,price) values ('.$vid.',(select id from komission where number='.$k[6].'), (select id from post where name=\'Секретарь\' and type=0), '.$u2.');';
         $_sql .= 'insert into bet(vid,kid,pid,price) values ('.$vid.',(select id from komission where number='.$k[6].'), (select id from post where name=\'Член комиссии\' and type=0), '.$u3.');';
-      } else if(strpos($k[9],'T') !== false) { //tik
-        $tik = explode('T', $k[9])[1];
+      } else if(strpos($k[9],'S') !== false) { //tik
+        $tik = explode('T', $k[8])[1];
         $q[] = '((select id from komission where number='.$tik.'), '.$vid.', '.$duf.', '.$dul.')';
         $_sql .= 'insert into bet(vid,kid,pid,price) values ('.$vid.',(select id from komission where number='.$tik.'), (select id from post where name=\'Председатель\' and type=0), '.$t0.');';
         $_sql .= 'insert into bet(vid,kid,pid,price) values ('.$vid.',(select id from komission where number='.$tik.'), (select id from post where name=\'Заместитель председателя\' and type=0), '.$t1.');';
@@ -76,7 +76,9 @@ if (!isset($_SESSION['currentUser']) || !in_array(8, $_SESSION['currentUser']->p
           <a class='dropdown-toggle' data-toggle='dropdown' href='#'>Тестирование&nbsp;<span class='caret'></span></a>
           <ul class='dropdown-menu'>
             <li><a href='/test/'>Тесты</a></li>
-            <li><a href='/test/reports.php'>Отчеты</a></li>
+            <?php if(in_array(8, $_SESSION['currentUser']->post))
+  echo '<li><a href="/test/reports.php">Отчеты</a></li>';
+?>
           </ul>
         </li>
         <li class='dropdown'>
@@ -115,7 +117,7 @@ if (!isset($_SESSION['currentUser']) || !in_array(8, $_SESSION['currentUser']->p
   <div class='tab-pane active container'>
     <nav>
       <a class='btn btn-success btn-small' data-toggle='modal' data-target='#addVoteModal'>Добавить выборы</a>
-      <a class='btn btn-warning btn-small' href='cal.php'>Обновить календарь</a>
+      <?php if((int)date('m')===1) echo '<a class=\'btn btn-warning btn-small\' href=\'cal.php\'>Обновить календарь</a>'; ?>
     </nav>
     <main>
       <table class='table table-bordered table-condensed table-striped'>

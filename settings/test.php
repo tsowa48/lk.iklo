@@ -77,7 +77,9 @@ if (!isset($_SESSION['currentUser']) || !in_array(8, $_SESSION['currentUser']->p
           <a class='dropdown-toggle' data-toggle='dropdown' href='#'>Тестирование&nbsp;<span class='caret'></span></a>
           <ul class='dropdown-menu'>
             <li><a href='/test/'>Тесты</a></li>
-            <li><a href='/test/reports.php'>Отчеты</a></li>
+            <?php if(in_array(8, $_SESSION['currentUser']->post))
+  echo '<li><a href="/test/reports.php">Отчеты</a></li>';
+?>
           </ul>
         </li>
         <li class='dropdown'>

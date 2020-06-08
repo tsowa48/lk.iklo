@@ -34,7 +34,9 @@ if (!isset($_SESSION['currentUser']) || !in_array(6, $_SESSION['currentUser']->p
           <a class='dropdown-toggle' data-toggle='dropdown' href='#'>Тестирование&nbsp;<span class='caret'></span></a>
           <ul class='dropdown-menu'>
             <li><a href='/test/'>Тесты</a></li>
-            <li><a href='/test/reports.php'>Отчеты</a></li>
+            <?php if(in_array(8, $_SESSION['currentUser']->post))
+		echo '<li><a href="/test/reports.php">Отчеты</a></li>';
+	    ?>
           </ul>
         </li>
         <li class='dropdown'>
@@ -90,7 +92,7 @@ if (!isset($_SESSION['currentUser']) || !in_array(6, $_SESSION['currentUser']->p
 
 
             $tww = pg_fetch_row(pg_query($_SESSION['psql'], 'select (((select coalesce(sum(S1.finish-S1.start),0)-coalesce(sum(case when S1.start < 6 then (case when S1.finish < 7 then S1.finish - S1.start else 6 - S1.start end) when S1.finish>22 then (case when S1.start > 21 then S1.finish - S1.start else S1.finish - 22 end) end),0)
-                                                    from schedule S1 where S1.vid=S.vid and S1.uid=S.uid and S1.day in (select doy from calendar where isholy=1)))) as holy, (select coalesce(sum(case when S2.start < 6 then (case when S2.finish < 7 then S2.finish - S2.start else 6 - S2.start end) when S2.finish>22 then (case when S2.start > 21 then S2.finish - S2.start else S2.finish - 22 end) end), 0) from schedule S2 where (S2.start < 6 or S2.finish > 22) and S2.vid=S.vid and S2.uid=S.uid) as night
+                                                    from schedule S1 where S1.vid=S.vid and S1.uid=S.uid and S1.day in (select doy from calendar where isholy=1 and year='.date('Y').')))) as holy, (select coalesce(sum(case when S2.start < 6 then (case when S2.finish < 7 then S2.finish - S2.start else 6 - S2.start end) when S2.finish>22 then (case when S2.start > 21 then S2.finish - S2.start else S2.finish - 22 end) end), 0) from schedule S2 where (S2.start < 6 or S2.finish > 22) and S2.vid=S.vid and S2.uid=S.uid) as night
                                                     from schedule S where S.vid='.$vid.' and S.uid='.(int)$row[0].' group by S.vid, S.uid;'));//Двойная оплата
             $twice = (int)$tww[0] + (int)$tww[1];//Праздничные + ночные
             $once = (int)$row[5] - $twice;//Одинарная оплата (кол-во часов)

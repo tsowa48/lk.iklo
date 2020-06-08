@@ -43,7 +43,9 @@ if (!isset($_SESSION['currentUser']) || !in_array(8, $_SESSION['currentUser']->p
           <a class='dropdown-toggle' data-toggle='dropdown' href='#'>Тестирование&nbsp;<span class='caret'></span></a>
           <ul class='dropdown-menu'>
             <li><a href='/test/'>Тесты</a></li>
-            <li><a href='/test/reports.php'>Отчеты</a></li>
+            <?php if(in_array(8, $_SESSION['currentUser']->post))
+  echo '<li><a href="/test/reports.php">Отчеты</a></li>';
+?>
           </ul>
         </li>
         <li class='dropdown'>
@@ -90,7 +92,7 @@ if (!isset($_SESSION['currentUser']) || !in_array(8, $_SESSION['currentUser']->p
       <table class='table table-bordered table-condensed table-striped'>
         <tr><th>Название</th><th>Номер</th><th><a href='?' class='btn btn-small btn-success'><i class='glyphicon glyphicon-home'></i></a></th></tr>
         <?php while($k = pg_fetch_row($komissions)) {
-          echo '<tr style=\'cursor:pointer;\' onclick=\'changeKid(this);\''.($_SESSION['currentKid'] === (int)$k[0] ? 'class=\'danger\' ':'').'kid=\''.$k[0].'\'><td>'.$k[1].'</td><td>'.$k[2].'</td><td><div class=\'btn btn-small btn-danger\' onclick=\'removeKomission(this)\'>X</div></td></tr>';
+          echo '<tr style=\'cursor:pointer;\' onclick=\'changeKid(this);\''.($_SESSION['currentKid'] === (int)$k[0] ? 'class=\'danger\' ':'').'kid=\''.$k[0].'\'><td>'.$k[1].'</td><td>'.$k[2].'</td><td><!--div class=\'btn btn-small btn-danger\' onclick=\'removeKomission(this)\'>X</div--></td></tr>';
         } ?>
       </table>
     </main>

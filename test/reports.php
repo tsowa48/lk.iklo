@@ -1,7 +1,7 @@
 <?php
 require_once $_SERVER['DOCUMENT_ROOT'].'/user.php';
 session_start();
-if (!isset($_SESSION['currentUser']) || $_SESSION['currentUser'] == NULL) {
+if (!isset($_SESSION['currentUser']) || $_SESSION['currentUser'] == NULL || !in_array(8, $_SESSION['currentUser']->post)) {
   pg_close($_SESSION['psql']);
   session_destroy();
   header('Location: /');
@@ -22,7 +22,9 @@ if (!isset($_SESSION['currentUser']) || $_SESSION['currentUser'] == NULL) {
           <a class='dropdown-toggle' data-toggle='dropdown' href='#'>Тестирование&nbsp;<span class='caret'></span></a>
           <ul class='dropdown-menu'>
             <li><a href='/test/'>Тесты</a></li>
-            <li><a href='/test/reports.php'>Отчеты</a></li>
+		<?php if(in_array(8, $_SESSION['currentUser']->post))
+			echo '<li><a href="/test/reports.php">Отчеты</a></li>';
+		?>
           </ul>
         </li>
         <li class='dropdown'>
@@ -62,7 +64,7 @@ if (!isset($_SESSION['currentUser']) || $_SESSION['currentUser'] == NULL) {
 
 <?php } else {
   $rid = (int)$_GET['id'];
-  $daysAfterVote = 30;//Сколько дней показывать тест после дня голосования
+  $daysAfterVote = 60;//Сколько дней показывать тест после дня голосования
   echo '<style> td, th {font-size: 15px;}</style>';
 
   include_once $_SERVER['DOCUMENT_ROOT'].'/test/reports/r'.$rid.'.php';
