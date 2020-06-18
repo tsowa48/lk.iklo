@@ -34,6 +34,8 @@ if (!isset($_SESSION['currentUser']) || !in_array(6, $_SESSION['currentUser']->p
   $voteName = str_replace('Дополнительные', 'дополнительных', $voteName);
   $voteName = str_replace('выборы', 'выборах', $voteName);
   $voteName = str_replace('Выборы', 'выборах', $voteName);
+  $voteName = str_replace('Общероссийское', 'общероссийском', $voteName);
+  $voteName = str_replace('общероссийское', 'общероссийском', $voteName);
   setlocale(LC_ALL, array('ru_RU', 'ru_RU.utf-8'));
   $firstInYear = strtotime('-1 day', strtotime(date('Y').'-01-01'));
 
@@ -72,7 +74,7 @@ if (!isset($_SESSION['currentUser']) || !in_array(6, $_SESSION['currentUser']->p
         if($komission[$i]['isstaffer'] === 1)
           unset($komission[$i]);
       }
-      $result = pg_query($_SESSION['psql'], 'select S.uid, S.day, (S.finish - S.start) as hours from schedule S, kv KV where KV.vid=S.vid and KV.kid='.$_SESSION['currentUser']->kid.' and S.vid='.$vid.' order by S.day;');
+      $result = pg_query($_SESSION['psql'], 'select S.uid, S.day, (S.finish - S.start) as hours from schedule S, kv KV where KV.vid=S.vid and KV.kid='.$_SESSION['currentUser']->kid.' and S.vid='.$vid.' and S.day > (KV.first - 1) and S.day < (KV.last + 1) order by S.day;');
       while($row = pg_fetch_row($result)) {
         $data[] = array('uid' => (int)$row[0], 'day' => (int)$row[1], 'hours' => (int)$row[2]);
       }
@@ -83,7 +85,7 @@ if (!isset($_SESSION['currentUser']) || !in_array(6, $_SESSION['currentUser']->p
         if($komission[$i]['isstaffer'] === 1)
           unset($komission[$i]);
       }
-      $result = pg_query($_SESSION['psql'], 'select S.uid, S.day, S.start, S.finish from schedule S, kv KV where S.finish is not null and KV.vid=S.vid and KV.kid='.$_SESSION['currentUser']->kid.' and S.vid='.$vid.' order by S.day;');
+      $result = pg_query($_SESSION['psql'], 'select S.uid, S.day, S.start, S.finish from schedule S, kv KV where S.finish is not null and KV.vid=S.vid and KV.kid='.$_SESSION['currentUser']->kid.' and S.vid='.$vid.' and S.day > (KV.first - 1) and S.day < (KV.last + 1) order by S.day;');
       while($row = pg_fetch_row($result)) {
         $data[] = array('uid' => (int)$row[0], 'day' => (int)$row[1], 'start' => (int)$row[2], 'finish' => (int)$row[3]);
       }

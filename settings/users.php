@@ -166,7 +166,7 @@ if (!isset($_SESSION['currentUser']) || !in_array(8, $_SESSION['currentUser']->p
             }
             echo '</select></td>';
           }//(is_numeric($user[4]) ? 'указан' : '')
-          echo '<td>'.$user[3].'</td><td>'.(strcmp($user[5], 'Администратор') === 0 ? '' : $user[6]).'</td><td>'.$user[4].'</td><td style=\'padding:0px;\'><input class=\'form-control input-sm\' onchange=\'setStaffer(this);\' type=\'checkbox\' name=\'isstaffer\' '.(is_numeric($user[7]) ? 'checked' : '').'/></td><td style=\'padding:0;\'><div class=\'btn btn-small btn-danger\' onclick=\'removeUser(this);\'>X</div></td></tr>';
+          echo '<td>'.$user[3].'</td><td>'.(strcmp($user[5], 'Администратор') === 0 ? '' : $user[6]).'</td><td>'.$user[4].'</td><td style=\'padding:0px;\'><input class=\'form-control input-sm\' onchange=\'setStaffer(this);\' type=\'checkbox\' name=\'isstaffer\' '.(intval($user[7])===1 ? 'checked' : '').'/></td><td style=\'padding:0;\'><div class=\'btn btn-small btn-danger\' onclick=\'removeUser(this);\'>X</div></td></tr>';
         } ?>
       </table>
     </main>
